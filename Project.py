@@ -32,4 +32,17 @@ def shunt(infix):
         postfix,stack = postfix + stack[-1],stack[:-1]
     return postfix
 
+class state:
+    label = None
+    edge1 = None
+    edge2 = None
+
+class nfa:
+    initial = None
+    accept = None
+
+    def __init__(self, initial, accept):
+        self.initial = initial
+        self.accept = accept
+
 print(shunt("a.(b|d).c*"))
