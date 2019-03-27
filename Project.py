@@ -45,4 +45,65 @@ class nfa:
         self.initial = initial
         self.accept = accept
 
-print(shunt("a.(b|d).c*"))
+def compile(postfix):
+    nfastack = []
+
+    for c in postfix:
+        if c == '.':
+
+            nfa2 = nfastack.pop()
+            nfa1 = nfastack.pop()
+
+            nfa1.accept.edge1 = nfa2.initial
+
+            newNFA = nfa(nfa1.initial, nfa2.accept)
+            nfastack.append(newNFA)
+        elif c == '|':
+            nfa2 = nfastack.pop()
+            nfa1 = nfastack.pop()
+
+            initial = state()
+            accept = state()
+
+            initial.edge1 = nfa1.initial
+            initial.edge2 = nfa2.initial
+
+            accept = state()
+
+            nfa1.accept.edge1 = accept
+            nfa2.accept.edge1 = accept
+
+            newNFA = nfa(initial, accept)
+            nfastack.append(newNFA)
+        elif c == '*':
+            nfa1 = nfastack.pop()
+
+            initial = state()
+            accept = state()
+
+            initial.edge1 = nfa1.initial
+            initial.edge2 = accept
+
+            nfa1.accept.edge1 = nfa.initial
+            nfa1.accept.edge2 = accept
+
+            newNFA = nfa(initial, accept)
+            nfastack.append(newNFA)
+        else:
+
+            accept = state()
+            initial = state()
+
+            initial.label = c
+            initial.edge1 = accept
+
+
+            newNFA = nfa(initial, accept)
+            nfastack.append(newNFA)
+
+    return nfastack.pop()
+
+shunting = shunt("a.(b|d).c*")
+print(shunting)
+
+print(compile(shunting))
