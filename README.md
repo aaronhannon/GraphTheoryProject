@@ -21,7 +21,7 @@ Write a Python Program that can build a non-deterministic finite automaton (NFA)
 3. User Interface / Menu
 
 
-	======
+	
 	 MENU
 	======
 	1. View Examples
