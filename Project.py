@@ -49,55 +49,75 @@ def compile(postfix):
     nfastack = []
 
     for c in postfix:
+        #Concatenate
         if c == '.':
-
+            #Pop 2 nfas off the stack
             nfa2 = nfastack.pop()
             nfa1 = nfastack.pop()
 
+            #Connect nfa1 accept edge to nfa2 initial
             nfa1.accept.edge1 = nfa2.initial
 
+            #Create new nfa and add back to the stack
             newNFA = nfa(nfa1.initial, nfa2.accept)
             nfastack.append(newNFA)
+        #OR
         elif c == '|':
+            #Pop 2 nfas off the stack
             nfa2 = nfastack.pop()
             nfa1 = nfastack.pop()
 
+            #Create 2 new states, 1 inital and 1 accept
             initial = state()
             accept = state()
 
+            #Connect new initial to the each nfa initial
             initial.edge1 = nfa1.initial
             initial.edge2 = nfa2.initial
 
-            accept = state()
-
+            #Connect edge of nfa accept state to new accept state
             nfa1.accept.edge1 = accept
             nfa2.accept.edge1 = accept
 
+            #Create new nfa and add back to the stack
             newNFA = nfa(initial, accept)
             nfastack.append(newNFA)
+        #0 or many
         elif c == '*':
+            #Pop one nfa off the stack
             nfa1 = nfastack.pop()
 
+            #Create 2 new states, 1 inital and 1 accept
             initial = state()
             accept = state()
 
+            #E arrows
+            #Connect new initial to nfa1 inital
             initial.edge1 = nfa1.initial
+            #Accept if string is empty
             initial.edge2 = accept
 
+            #Connecting back to the initial state 
             nfa1.accept.edge1 = nfa.initial
+            #String is accepted
             nfa1.accept.edge2 = accept
 
+            #Create new nfa and add back to the stack
             newNFA = nfa(initial, accept)
             nfastack.append(newNFA)
-        else:
-
+        #Other Characters
+        else: 
+            
+            #Create 2 new states, 1 inital and 1 accept
             accept = state()
             initial = state()
 
+            #Initial label = character that is not one of the operators
             initial.label = c
+            #Connect initial directly to the accept state
             initial.edge1 = accept
 
-
+            #Create new nfa and add back to the stack
             newNFA = nfa(initial, accept)
             nfastack.append(newNFA)
 
