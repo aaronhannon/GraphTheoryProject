@@ -4,7 +4,7 @@
 
 def shunt(infix):
     #Specials
-    specials = {'*': 50, '.': 40, '|':30}
+    specials = {'+': 50, '?': 50, '*': 50, '.': 40, '|':30}
     stack = ""
     postfix = ""
     
@@ -101,7 +101,7 @@ def compile(postfix):
             initial.edge2 = accept
 
             #Connecting back to the initial state 
-            nfa1.accept.edge1 = nfa.initial
+            nfa1.accept.edge1 = nfa1.initial
             #String is accepted
             nfa1.accept.edge2 = accept
 
@@ -122,7 +122,28 @@ def compile(postfix):
             initial.edge1 = nfa1.initial
 
             #Connecting back to the initial state 
-            nfa1.accept.edge1 = nfa.initial
+            nfa1.accept.edge1 = nfa1.initial
+            #String is accepted
+            nfa1.accept.edge2 = accept
+
+            #Create new nfa and add back to the stack
+            newNFA = nfa(initial, accept)
+            nfastack.append(newNFA)
+        #0 or 1
+        elif c == '?':
+            #Pop one nfa off the stack
+            nfa1 = nfastack.pop()
+
+            #Create 2 new states, 1 inital and 1 accept
+            initial = state()
+            accept = state()
+
+            #E arrows
+            #Accept if string is empty
+            initial.edge2 = accept
+            #Connect new initial to nfa1 inital
+            initial.edge1 = nfa1.initial
+            
             #String is accepted
             nfa1.accept.edge2 = accept
 
@@ -187,8 +208,8 @@ def match(infix,string):
 
     return (nfa.accept in current)
 
-infixes = ["a.b.c*","a.b.c+","a.(b|d).c*","(a.(b|d))*","a.(b.b)*.c"]
-strings = ["","ab","abbc","abcc","abad","abbbc"]
+infixes = ["a.b.c*","a.b.c+","a.b.c?","a.(b|d).c?","(a.(b|d))*","a.(b.b)*.c"]
+strings = ["","abcc","abbc","abcc","abad","abbbc"]
 
 shunting = shunt("a.(b|d).c*")
 print(shunting)
