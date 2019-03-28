@@ -32,15 +32,18 @@ def shunt(infix):
         postfix,stack = postfix + stack[-1],stack[:-1]
     return postfix
 
+#State Class
 class state:
     label = None
     edge1 = None
     edge2 = None
 
+#Nfa Class
 class nfa:
     initial = None
     accept = None
 
+    #Constructor
     def __init__(self, initial, accept):
         self.initial = initial
         self.accept = accept
@@ -105,6 +108,7 @@ def compile(postfix):
             #Create new nfa and add back to the stack
             newNFA = nfa(initial, accept)
             nfastack.append(newNFA)
+        #One or more
         elif c == '+':
             #Pop one nfa off the stack
             nfa1 = nfastack.pop()
@@ -144,9 +148,11 @@ def compile(postfix):
     return nfastack.pop()
 
 def followes(state):
+    #Create set for states
     states = set()
     states.add(state)
 
+    #if state is not null, set states set to states next states 
     if state.label is None:
         if state.edge1 is not None:
             states |= followes(state.edge1)
@@ -157,19 +163,25 @@ def followes(state):
 
 
 def match(infix,string):
+    #Converts infix expression to postfix
     postfix = shunt(infix)
+    #Creates an nfa from a given postfix expression 
     nfa = compile(postfix)
 
+    #Creates 2 sets
     current = set()
     next = set()
 
+    #Sets current to inital states
     current |= followes(nfa.initial)
 
     for s in string:
         for c in current:
+            #if c.label equals s then set the next set to c's next states 
             if c.label == s:
                 next |= followes(c.edge1)
 
+        #Setting current set of states to next state
         current = next
         next = set()
 
