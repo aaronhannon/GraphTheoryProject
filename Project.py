@@ -103,7 +103,46 @@ def compile(postfix):
 
     return nfastack.pop()
 
+def followes(state):
+    states = set()
+    states.add(state)
+
+    if state.label is None:
+        if state.edge1 is not None:
+            states |= followes(state.edge1)
+        if state.edge2 is not None:
+            states |= followes(state.edge2)
+
+    return states
+
+
+def match(infix,string):
+    postfix = shunt(infix)
+    nfa = compile(postfix)
+
+    current = set()
+    next = set()
+
+    current |= followes(nfa.initial)
+
+    for s in string:
+        for c in current:
+            if c.label == s:
+                next |= followes(c.edge1)
+
+        current = next
+        next = set()
+
+    return (nfa.accept in current)
+
+infixes = ["a.b.c*","a.(b|d).c*","(a.(b|d))*","a.(b.b)*.c"]
+strings = ["","abc","abbc","abcc","abad","abbbc"]
+
 shunting = shunt("a.(b|d).c*")
 print(shunting)
 
 print(compile(shunting))
+
+for i in infixes:
+    for s in strings:
+        print(match(i,s),i,s)
