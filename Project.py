@@ -183,16 +183,20 @@ def followes(state):
     return states
 
 
-def match(infix,string):
-    #Converts infix expression to postfix
-    postfix = shunt(infix)
-    #Creates an nfa from a given postfix expression 
-    nfa = compile(postfix)
-
+def match(setting,expression,string):
+    if setting == 1:
+        #Converts infix expression to postfix
+        postfix = shunt(expression)
+        #Creates an nfa from a given postfix expression 
+        nfa = compile(postfix)
+    elif setting == 2:
+        #Sets expression to postfix variable
+        postfix = expression
+        #Creates an nfa from a given postfix expression 
+        nfa = compile(postfix)
     #Creates 2 sets
     current = set()
     next = set()
-
     #Sets current to inital states
     current |= followes(nfa.initial)
 
@@ -211,11 +215,50 @@ def match(infix,string):
 infixes = ["a.b.c*","a.b.c+","a.b.c?","a.(b|d).c?","(a.(b|d))*","a.(b.b)*.c"]
 strings = ["","abcc","abbc","abcc","abad","abbbc"]
 
-shunting = shunt("a.(b|d).c*")
-print(shunting)
+#Var to exit menu loop
+exitBool = False
 
-print(compile(shunting))
+#MENU LOOP
+while exitBool != True:
+    print("\n======\n MENU \n======\n1. View Examples\n2. Enter Infix Expression\n3. Enter Postfix Expression\n4. Read from file(Sample Provided in Project folder)\n5. Exit")
+    option = input("Option: ")
 
-for i in infixes:
-    for s in strings:
-        print(match(i,s),i,s)
+    #Samples from videos
+    if option == "1":
+        for i in infixes:
+            for s in strings:
+                print(match(1,i,s),i,s)
+    #User can enter an infix expression followed by a string
+    elif option == "2":
+        infix = input("Enter Infix Expression:")
+        string = input("Enter String:")
+        print("Postfix: ",shunt(infix))
+        print("\nMatch =",match(1,infix,string),"\nTO INFIX:",infix,"\nWITH STRING:",string)
+    #User can enter a postfix expression followed by a string      
+    elif option == "3":
+        postfix = input("Enter Postfix Expression:")
+        string1 = input("Enter String:")
+        print("\nMatch =",match(2,postfix,string1),"\nTO POSTFIX:",postfix,"\nWITH STRING:",string1)
+    #Read infix expressions and strings from txt files
+    elif option == "4":
+        infixFile = []
+        stringFile = []
+
+        infixPath = input("Enter infix file path(./Sample_Files/infixes.txt): ")
+        stringPath = input("Enter string file path()./Sample_Files/strings.txt): ")
+
+        f = open(infixPath, "r")
+        for x in f:
+            infixFile.append(x.strip())
+        f.close()
+        f = open(stringPath, "r")
+        for x in f:
+            stringFile.append(x.strip())
+        f.close()
+        for i in infixFile:
+            for s in stringFile:
+                print(match(1,i,s),i,s)
+    #EXIT MENU
+    elif option == "5":
+        exitBool = True
+            
