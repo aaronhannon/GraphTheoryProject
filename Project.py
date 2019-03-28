@@ -1,7 +1,6 @@
 #Graph Theory Project - G00347352 - Aaron Hannon
 
-#Shunting algorithm
-
+#Shunting algorithm - Converts infix expression to postfix expression
 def shunt(infix):
     #Specials
     specials = {'+': 50, '?': 50, '*': 50, '.': 40, '|':30}
