@@ -105,6 +105,26 @@ def compile(postfix):
             #Create new nfa and add back to the stack
             newNFA = nfa(initial, accept)
             nfastack.append(newNFA)
+        elif c == '+':
+            #Pop one nfa off the stack
+            nfa1 = nfastack.pop()
+
+            #Create 2 new states, 1 inital and 1 accept
+            initial = state()
+            accept = state()
+
+            #E arrows
+            #Connect new initial to nfa1 inital
+            initial.edge1 = nfa1.initial
+
+            #Connecting back to the initial state 
+            nfa1.accept.edge1 = nfa.initial
+            #String is accepted
+            nfa1.accept.edge2 = accept
+
+            #Create new nfa and add back to the stack
+            newNFA = nfa(initial, accept)
+            nfastack.append(newNFA)
         #Other Characters
         else: 
             
@@ -155,8 +175,8 @@ def match(infix,string):
 
     return (nfa.accept in current)
 
-infixes = ["a.b.c*","a.(b|d).c*","(a.(b|d))*","a.(b.b)*.c"]
-strings = ["","abc","abbc","abcc","abad","abbbc"]
+infixes = ["a.b.c*","a.b.c+","a.(b|d).c*","(a.(b|d))*","a.(b.b)*.c"]
+strings = ["","ab","abbc","abcc","abad","abbbc"]
 
 shunting = shunt("a.(b|d).c*")
 print(shunting)
